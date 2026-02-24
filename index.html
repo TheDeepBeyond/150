@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <title>150チェック</title>
+
+  <!-- html2canvas（画像化ライブラリ） -->
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+
+  <style>
+    body {
+      font-family: sans-serif;
+    }
+
+    .wrapper {
+      display: flex;
+      justify-content: center;
+      margin: 20px;
+    }
+
+    .panel {
+      border: 3px solid #555;
+      padding: 15px;
+      border-radius: 8px;
+      background: #ffd700; /* 金色 */
+      text-align: center;  /* グリッド中央寄せ */
+    }
+
+    .panel-title {
+      margin-bottom: 8px;
+      font-weight: bold;
+      font-size: 18px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(10, 40px);
+      grid-auto-rows: 40px;
+      gap: 4px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .cell {
+      border: 1px solid #333;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      user-select: none;
+      background-color: #fff;
+      transition: background-color 0.2s;
+    }
+
+    .cell.active {
+      background-color: #4caf50;
+      color: #fff;
+    }
+
+    .button-row {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .btn {
+      flex: 1;
+      padding: 8px;
+      font-size: 14px;
+      cursor: pointer;
+      border: none;
+      border-radius: 5px;
+      background: #333;
+      color: white;
+    }
+  </style>
+</head>
+<body><div class="wrapper">
+  <div class="panel" id="panel_gold">
+
+    <div class="grid" id="grid_gold"></div>
+
+    <div class="button-row">
+      <button class="btn" id="copyBtn">未チェックをコピー</button>
+      <button class="btn" id="saveBtn">画像保存</button>
+      <button class="btn" id="checkAllBtn">全てチェック</button>
+      <button class="btn" id="resetBtn">全て解除</button>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  const grid = document.getElementById('grid_gold');
+
+  // 1～150のセルを作成
+  for (let i = 1; i <= 150; i++) {
+    const cell = document.createElement('div');
+    cell.className = 'cell';
+    cell.textContent = i;
+
+    cell.addEventListener('click', () => {
+      cell.classList.toggle('active');
+    });
+
+    grid.appendChild(cell);
+  }
+
+  /* 未チェックコピー */
+  document.getElementById('copyBtn').addEventListener('click', () => {
+    const cells = document.querySelectorAll('#panel_gold .cell');
+    const unchecked = [];
+
+    cells.forEach(cell => {
+      if (!cell.classList.contains('active')) {
+        unchecked.push(cell.textContent);
+      }
+    });
+
+    const text = unchecked.join("、");
+
+    navigator.clipboard.writeText(text).then(() => {
+      alert("未チェックの数字をコピーしました:\n" + text);
+    });
+  });
+
+  /* 画像保存 */
+  document.getElementById('saveBtn').addEventListener('click', () => {
+    const target = document.getElementById('panel_gold');
+
+    html2canvas(target).then(canvas => {
+      const link = document.createElement('a');
+      link.href = canvas.toDataURL("image/png");
+      link.download = "金パネル.png";
+      link.click();
+    });
+  });
+
+  /* 全てチェック */
+  document.getElementById('checkAllBtn').addEventListener('click', () => {
+    const cells = document.querySelectorAll('#panel_gold .cell');
+    cells.forEach(cell => cell.classList.add('active'));
+  });
+
+  /* 全て解除 */
+  document.getElementById('resetBtn').addEventListener('click', () => {
+    const cells = document.querySelectorAll('#panel_gold .cell.active');
+    cells.forEach(cell => cell.classList.remove('active'));
+  });
+</script>
+
+</body>
+</html>
